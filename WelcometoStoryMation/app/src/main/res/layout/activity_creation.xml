@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".Creation">
+
+
+    <TextView
+        android:id="@+id/text_view_p2"
+        android:layout_width="328dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="serif"
+        android:text="Create Video"
+        android:textColor="@color/purple_500"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="301dp"
+        android:insetBottom="15dp"
+        app:srcCompat="@drawable/creation" />
+
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="346dp"
+        android:layout_height="105dp"
+        android:layout_gravity="center"
+        android:insetBottom="10dp"
+        android:onClick="btnsystem_creation"
+        android:text="System Mode Video"
+        android:textAlignment="center"
+        android:textColor="#E91E63"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="58dp"
+        tools:layout_editor_absoluteY="513dp" />
+
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="346dp"
+        android:layout_height="94dp"
+        android:layout_gravity="center"
+        android:insetBottom="10dp"
+        android:text="User Mode video"
+        android:textAlignment="center"
+        android:textColor="#E91E63"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="58dp"
+        tools:layout_editor_absoluteY="513dp" />
+
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="wrap_content"
+        android:layout_height="71dp"
+        android:layout_gravity="end"
+        android:insetBottom="10dp"
+        android:onClick="btnBack"
+        android:text="Back"
+        android:textAlignment="textEnd"
+        android:textColor="#E91E63"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="58dp"
+        tools:layout_editor_absoluteY="513dp" />
+
+
+</LinearLayout>
