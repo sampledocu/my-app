@@ -1,0 +1,140 @@
+import cv2
+import pyttsx3
+from nltk import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+from pymongo import MongoClient
+# Provide the mongodb atlas url to connect python to mongodb using pymongo
+CONNECTION_STRING = "mongodb+srv://username:<pass>@cluster0.n3fsc.mongodb.net/test"
+
+# Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
+client = MongoClient(CONNECTION_STRING)
+db = client["project"]
+
+#character = input("Please Enter Character Name:")
+text = "It was the hot summer days. A crow was suffering from thirst and was wandering here and there in the search of water. But even after wandering in many places, he did not get water. He was flying too late. He was tired due to constant flying. Meanwhile, his thirst was increasing in the scorching heat. Gradually he started losing his patience. He started to feel that his end time was near. Today he will surely be killed.Now he was not being blown away due to fatigue. He sat on the branch of a tree to rest for some time.There he saw that the pitcher was placed under a nearer tree. In the hope that there was water in the pitcher, he flew to the pitcher and looked inside it.The crows saw that there is water in the pitcher, but it is so low that its beak could not reach there. He became depressed. He could not understand how to reach the water kept in the pitcher. But then he thought that being depressed will not work, we have to think of some solution.Sitting on the pitcher, he started thinking of solutions. While thinking, his eyesight fell on a pile of pebbles lying nearby. What was then? The crows mind rang. He figured out a solution.Without delay, he flew to the pile of pebbles, picked one of them from his beak, brought it to the pitcher, and put it in the pitcher. He started picking each pebble from his beak and putting it in the pitcher. Putting the pebbles will cause the water of the pot to rise. In a short time, the water of the pitcher came up so much that the crow could pour beak into it and drink water.The hard work of the crows had paid off and he was satisfied after drinking water "
+#lower the text
+text=text.lower()
+scene = []
+characters = []
+# word Token
+a = word_tokenize(text)
+
+
+
+new_text = []
+new_list = []
+for j in a:
+    if j != "he" :
+        new_text.append(j)
+    else :
+        new_text.append("crow")
+
+sentence = " ".join(new_text)
+
+# sent Token
+story = sent_tokenize(sentence) #will be used in audio
+
+sentence = word_tokenize(sentence)
+
+stop_words = stopwords.words("english")
+for i in sentence:
+    if i not in stop_words:
+        new_list.append(i)
+sentence = " ".join(new_list)
+
+find = "C:/Users/Usama Ejaz Wais/PycharmProjects/pythonProject/project img/"
+sentence = sent_tokenize(sentence)
+
+
+#Adding scenes in array for video scenes
+setter_scene =0
+for i in sentence:
+    link_for_scenes_image = ""
+    word = word_tokenize(i)
+    for j in word:
+        find=find+j+".jpg"
+        print("aa ",find)
+        collecion = db["scenes"]
+        link_for_scenes_image=collecion.find({"seen":j})
+        for document in link_for_scenes_image:
+            link_for_scenes_image = document["link"]
+        if(link_for_scenes_image == find):
+            scene.append(link_for_scenes_image)
+            break
+        else:
+            find="not"
+    if find=="not" & setter_scene!=0:
+        scene.append(scene[setter_scene-1])
+    setter_scene=setter_scene+1
+
+
+setter_characters =0
+#Adding characters in array for video scenes
+for i in sentence:
+    word = word_tokenize(i)
+    for j in word:
+        find=find+j+".jpg"
+        collecion = db["characters"]
+        link_for_scenes_image=collecion.find({"name":j})
+        for document in link_for_scenes_image:
+            link_for_scenes_image = document["link"]
+        if(link_for_scenes_image == find):
+            characters.append(link_for_scenes_image)
+            break
+        else:
+            find="0"
+    if find=="0" & setter_characters!=0:
+        characters.append(characters[setter_characters-1])
+    setter_characters=setter_characters+1
+
+
+
+from PIL import Image
+video_array = []
+#Read the two images
+for i in range(len(sentence)):
+    image1 = Image.open(scene[i])
+    image2 = Image.open(characters[i])
+    #resize, first image
+    img = "C:/Users/Usama Ejaz Wais/PycharmProjects/pythonProject/project img/"+i+".jpg"
+    back_im = image1.copy()
+    back_im.paste(image2, (500,200))
+    back_im.save(img, quality=95)
+    video_array.append(img)
+
+
+
+import moviepy.editor as mymovie
+from moviepy.editor import *
+
+clips = []
+for movie in range(len(sentence)):
+    time_set = sentence[movie]/3
+    clip =  ImageClip(video_array[movie]).set_duration(time_set)
+    clips.append(clip)
+
+video_clip = concatenate_videoclips(clips, method='compose')
+video_clip.write_videofile("C:/Users/Usama Ejaz Wais/PycharmProjects/pythonProject/project img/video.mp4", fps=24, remove_temp=True, codec="libx264", audio_codec="aac")
+
+
+from gtts import gTTS
+import os
+language = 'en'
+myobj = gTTS(text=text, lang=language, slow=False)
+
+# Saving the converted audio in a mp3 file named
+# welcome
+myobj.save("C:/Users/Usama Ejaz Wais/PycharmProjects/pythonProject/project img/audio.mp3")
+
+
+inputaudio = "audio.mp3"
+inputvideo = "video.mp4"
+outputvideo = "Story.mp4"
+
+
+videoclip = mymovie.VideoFileClip(inputvideo)
+audioclip = mymovie.AudioFileClip(inputaudio)
+finalclip = videoclip.set_audio(audioclip)
+finalclip.write_videofile(outputvideo, fps=60)
+
+
